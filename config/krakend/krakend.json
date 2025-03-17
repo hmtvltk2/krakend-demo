@@ -54,10 +54,7 @@
               "flatmap_filter": [
                 {
                   "type": "move",
-                  "args": [
-                    "collection",
-                    "coins"
-                  ]
+                  "args": ["collection", "coins"]
                 },
                 {
                   "type": "del",
@@ -110,11 +107,11 @@
       "backend": [
         {
           "url_pattern": "/shop/campaigns.json",
-          "allow": [ "campaigns" ]
+          "allow": ["campaigns"]
         },
         {
           "url_pattern": "/shop/products.json",
-          "allow": [ "products" ],
+          "allow": ["products"],
           "extra_config": {
             "qos/ratelimit/proxy": {
               "max_rate": 1,
@@ -203,7 +200,7 @@
       "backend": [
         {
           "url_pattern": "/hotels/1.json",
-          "allow": [ "destination_id" ]
+          "allow": ["destination_id"]
         },
         {
           "url_pattern": "/destinations/{resp0_destination_id}.json"
@@ -224,7 +221,7 @@
           "group": "user"
         },
         {
-          "host": [ "http://fake_url_that_should_not_resolve.tld" ],
+          "host": ["http://fake_url_that_should_not_resolve.tld"],
           "url_pattern": "/",
           "group": "none"
         }
@@ -310,16 +307,15 @@
       "endpoint": "/mocked-response",
       "method": "GET",
       "output_encoding": "json",
-      "backend": [{"host": ["http://unexistent_backend"], "url_pattern": "/"}],
+      "backend": [
+        { "host": ["http://unexistent_backend"], "url_pattern": "/" }
+      ],
       "extra_config": {
         "proxy": {
           "static": {
             "data": {
               "an_integer": 123,
-              "an_array": [
-                "arr1",
-                "arr2"
-              ],
+              "an_array": ["arr1", "arr2"],
               "an_object": {
                 "obj": "obj1"
               }
@@ -331,35 +327,7 @@
     }
   ],
   "sequential_start": true,
-  "async_agent": [
-    {
-      "name": "async-agent-demo",
-      "backend": [
-        {
-          "host":[ "http://127.0.0.1:8080" ],
-          "url_pattern": "/__debug/async-agent-demo",
-          "method": "POST"
-        }
-      ],
-      "consumer": {
-        "topic": "*.bar",
-        "workers": 20
-      },
-      "connection": {
-        "max_retries": 10,
-        "backoff_strategy": "exponential-jitter"
-      },
-      "extra_config": {
-        "async/amqp": {
-          "name": "krakend",
-          "host": "amqp://guest:guest@rabbitmq:5672/",
-          "exchange": "foo",
-          "prefetch_count": 40,
-          "auto_ack": true
-        }
-      }
-    }
-  ],
+
   "extra_config": {
     "telemetry/metrics": {
       "collection_time": "30s",
@@ -373,29 +341,14 @@
       "password": "pas5w0rd"
     },
     "telemetry/logging": {
-      "level": "DEBUG",
-      "prefix": "[KRAKEND]",
-      "syslog": false,
-      "stdout": true
+      "level": "WARNING",
+      "prefix": "[KRAKEND]"
     },
     "telemetry/gelf": {
       "address": "logstash:12201",
       "enable_tcp": false
     },
-    "telemetry/opencensus": {
-      "sample_rate": 100,
-      "reporting_period": 1,
-      "enabled_layers": {
-        "backend": true,
-        "router": true
-      },
-      "exporters": {
-        "jaeger": {
-          "endpoint": "http://jaeger:14268/api/traces",
-          "service_name": "krakend"
-        }
-      }
-    },
+
     "security/cors": {
       "allow_origins": ["*"],
       "allow_methods": ["POST", "GET"],
