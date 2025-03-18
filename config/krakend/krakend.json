@@ -237,6 +237,22 @@
       ]
     },
     {
+      "@comment": "Feature: OAuth2 Client Credentials",
+      "endpoint": "/private/user",
+      "backend": [
+        {
+          "url_pattern": "/user/1.json"
+        }
+      ],
+      "extra_config": {
+        "auth/validator": {
+          "alg": "RS256",
+          "jwk_url": "https://sso.hcmgis.vn/oauth2/jwks",
+          "audience": ["https://sso.hcmgis.vn"]
+        }
+      }
+    },
+    {
       "@comment": "Feature: Authorization based on JWT (using Auth0)",
       "endpoint": "/private/auth0",
       "backend": [
@@ -326,7 +342,6 @@
       }
     }
   ],
-  "sequential_start": true,
 
   "extra_config": {
     "telemetry/metrics": {
@@ -340,14 +355,6 @@
       "username": "krakend-dev",
       "password": "pas5w0rd"
     },
-    "telemetry/logging": {
-      "level": "WARNING",
-      "prefix": "[KRAKEND]"
-    },
-    "telemetry/gelf": {
-      "address": "logstash:12201",
-      "enable_tcp": false
-    },
 
     "security/cors": {
       "allow_origins": ["*"],
@@ -355,14 +362,6 @@
       "allow_headers": ["Origin", "Authorization", "Content-Type"],
       "expose_headers": ["Content-Length"],
       "max_age": "12h"
-    },
-    "auth/revoker": {
-      "N": 10000000,
-      "P": 0.0000001,
-      "hash_name": "optimal",
-      "TTL": 1500,
-      "port": 1234,
-      "token_keys": ["jti"]
     }
   }
 }
