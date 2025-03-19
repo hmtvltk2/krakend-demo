@@ -1,44 +1,33 @@
 services:
-  krakend_ce:
-
+  krakend:
     image: devopsfaith/krakend:2.9
     volumes:
       - ./config/krakend:/etc/krakend
     ports:
-      - "1234:1234"
       - "8080:8080"
-      - "8090:8090"
     command: [ "run", "-d", "-c", "/etc/krakend/krakend.json" ]
-    depends_on:
-      - fake_api
+    networks:
+      - observability
+  prometheus:
+    image: prom/prometheus:v2.53.4
+    volumes:
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - observability
+
   grafana:
     image: grafana/grafana:11.5.2
     ports:
-      - "4000:3000"
-    volumes:
-      - "./config/grafana/datasources/all.yml:/etc/grafana/provisioning/datasources/all.yml"
-      - "./config/grafana/dashboards/all.yml:/etc/grafana/provisioning/dashboards/all.yml"
-      - "./config/grafana/krakend:/var/lib/grafana/dashboards/krakend"
-  influxdb:
-    image: influxdb:2.7.11
-    environment:
-      - "INFLUXDB_DB=krakend"
-      - "INFLUXDB_USER=krakend-dev"
-      - "INFLUXDB_USER_PASSWORD=pas5w0rd"
-      - "INFLUXDB_ADMIN_USER=admin"
-      - "INFLUXDB_ADMIN_PASSWORD=supersecretpassword"
-    ports:
-      - "8086:8086"
-
-  fake_api:
-    image: busybox:latest
-    volumes:
-      - ./data:/var/www/
-    ports:
-      - "8000:80"
-    command: httpd -f -h /var/www/
-  web:
-    build:
-      context: images/spa-auth-web
-    ports:
       - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - "./config/grafana/datasources/all.yml:/etc/grafana/provisioning/datasources/all.yml"
+    networks:
+      - observability
+
+networks:
+  observability:
+    driver: bridge
+
+volumes:
+  grafana-data:
